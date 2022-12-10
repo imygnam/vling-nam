@@ -1,4 +1,23 @@
 import {ApolloServer, gql} from "apollo-server";
+import mongoose from "mongoose";
+
+mongoose.connect("mongodb://localhost:27017/test");
+
+const db = mongoose.connection;
+
+db.on("error", console.error.bind(console, "connection error:"));
+db.once("open", function() {
+    console.log("Connected to MongoDB");
+});
+
+const ExchangeInfoSchema = new mongoose.Schema({
+    src: 'string',
+    tgt: 'string',
+    rate: 'number',
+    date: 'string'
+});
+
+const ExchangeInfo = mongoose.model('ExchangeInfo', ExchangeInfoSchema);
 
 const typeDefs = gql`
   type Query {
@@ -51,11 +70,20 @@ const typeDefs = gql`
 const resolvers = {
     Query: {
       getExchangeRate(root, {src, tgt}){
-          return {src: src, tgt: tgt, rate: 1200, date: "2020-01-01"}
+        return ExchangeInfo.findOne({src, tgt}).sort({date: -1}).exec();
+
       }
     },
     Mutation: {
         postExchangeRate(root, {info}){
+            const newExchangeInfo = new ExchangeInfo(info);
+            newExchangeInfo.save(function (error, data) {
+                if(error){
+                    console.log(error);
+                }else{
+                    console.log(data)
+                }
+            });
             return {src: info.src, tgt: info.tgt, rate: info.rate, date: info.date}
         },
         deleteExchangeRate(root, {info}){
