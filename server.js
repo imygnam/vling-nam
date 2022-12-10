@@ -50,22 +50,21 @@ const typeDefs = gql`
 
 const resolvers = {
     Query: {
-      getExchangeRate(){
-          return {src: "krw", tgt: "usd", rate: 1200, date: "2020-01-01"}
+      getExchangeRate(root, {src, tgt}){
+          return {src: src, tgt: tgt, rate: 1200, date: "2020-01-01"}
       }
     },
     Mutation: {
-        postExchangeRate(){
-            return {src: "krw", tgt: "usd", rate: 1200, date: "2020-01-01"}
+        postExchangeRate(root, {info}){
+            return {src: info.src, tgt: info.tgt, rate: info.rate, date: info.date}
         },
-        deleteExchangeRate(){
-            return {src: "krw", tgt: "usd", rate: 1200, date: "2020-01-01"}
+        deleteExchangeRate(root, {info}){
+            return {src: info.src, tgt: info.tgt, rate: info.rate, date: info.date}
         }
     }
 }
 
 const server = new ApolloServer({typeDefs, resolvers});
-
 
 server.listen(5110).then(({url}) => {
   console.log(`🚀 Server ready at ${url}`);
