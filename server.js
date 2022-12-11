@@ -1,5 +1,7 @@
-import {ApolloServer, gql} from "apollo-server";
+import {ApolloServer, gql} from "apollo-server-express";
 import mongoose from "mongoose";
+import express from "express";
+import {createServer} from "http";
 
 mongoose.connect("mongodb://localhost:27017/test");
 
@@ -23,6 +25,7 @@ const typeDefs = gql`
   type Query {
     "환율조회"
     getExchangeRate(src:String!, tgt:String!): ExchangeInfo
+      test: String
   }
 
   type Mutation {
@@ -72,7 +75,10 @@ const resolvers = {
       getExchangeRate(root, {src, tgt}){
         return ExchangeInfo.findOne({src, tgt}).sort({date: -1}).exec();
 
-      }
+      },
+        test(){
+            return "test";
+        }
     },
     Mutation: {
         postExchangeRate(root, {info}){
@@ -92,8 +98,13 @@ const resolvers = {
     }
 }
 
-const server = new ApolloServer({typeDefs, resolvers});
+const app = express();
 
-server.listen(5110).then(({url}) => {
-  console.log(`🚀 Server ready at ${url}`);
+const server = new ApolloServer({typeDefs, resolvers});
+await server.start();
+server.applyMiddleware({app, path: "/graphql"});
+
+const httpserver = createServer(app);
+httpserver.listen({port: 5110}, () => {
+    console.log("Apollo Server on http://localhost:4000/graphql");
 });
