@@ -4,7 +4,6 @@ const typeDefs = gql`
     type Query {
         "환율조회"
         getExchangeRate(src:String!, tgt:String!): ExchangeInfo
-        test: String
     }
 
     type Mutation {

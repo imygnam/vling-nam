@@ -6,19 +6,15 @@ import {createServer} from "http";
 import resolvers from "./src/apollo-server/resolver.js";
 import typeDefs from "./src/apollo-server/schema.js";
 
-mongoose.connect("mongodb://localhost:27017/test");
-
-const db = mongoose.connection;
-
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", function() {
-    console.log("Connected to MongoDB");
-});
+mongoose
+    .connect("mongodb://localhost:27017/test")
+    .then(() => console.log("Connected to MongoDB"))
+    .catch((error) => console.log(error));
 
 const app = express();
-
 const server = new ApolloServer({typeDefs, resolvers});
 await server.start();
+
 server.applyMiddleware({app, path: "/graphql"});
 
 const httpserver = createServer(app);
