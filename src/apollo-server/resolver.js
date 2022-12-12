@@ -16,7 +16,8 @@ const resolvers = {
             return {src: info.src, tgt: info.tgt, rate: info.rate, date: info.date};
         },
         deleteExchangeRate(root, {info}){
-            return {src: info.src, tgt: info.tgt, rate: info.rate, date: info.date}
+            let query = {src: info.src, tgt: info.tgt, date: info.date};
+            return ExchangeInfo.findOneAndDelete(query).exec();
         }
     }
 }
