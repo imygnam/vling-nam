@@ -12,8 +12,7 @@ const resolvers = {
             info.date = info.date || new Date().toISOString().slice(0, 10);
             // upsert
             let query = {src: info.src, tgt: info.tgt, date: info.date};
-            ExchangeInfo.findOneAndUpdate(query, info, {upsert: true, new: true}).exec().then(r => console.log(r));
-            return {src: info.src, tgt: info.tgt, rate: info.rate, date: info.date};
+            return ExchangeInfo.findOneAndUpdate(query, info, {upsert: true, new: true}).exec();
         },
         deleteExchangeRate(root, {info}){
             let query = {src: info.src, tgt: info.tgt, date: info.date};
