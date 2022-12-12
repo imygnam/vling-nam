@@ -8,9 +8,12 @@ import typeDefs from "./src/apollo-server/schema.js";
 import baseInfo from "./src/baseInfo.json" assert {type: "json"};
 import ExchangeInfo from "./src/models/exchangeInfo.js";
 
+import dotenv from "dotenv";
+dotenv.config();
+
 mongoose.set('strictQuery', false);
 mongoose
-    .connect("mongodb://localhost:27017/test")
+    .connect(`mongodb://localhost:${process.env.MONGO_PORT}/test`)
     .then(() => console.log("Connected to MongoDB"))
     .catch((error) => console.log(error));
 
@@ -27,6 +30,6 @@ await server.start();
 server.applyMiddleware({app, path: "/graphql"});
 
 const httpserver = createServer(app);
-httpserver.listen({port: 5110}, () => {
-    console.log("Apollo Server on http://localhost:5110/graphql");
+httpserver.listen({port: process.env.PORT}, () => {
+    console.log(`Apollo Server on http://localhost:${process.env.PORT}/graphql`);
 });
